@@ -1,4 +1,4 @@
-﻿
+
 // ChildView.h: CChildView 클래스의 인터페이스
 //
 
@@ -40,5 +40,7 @@ public:
 //	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 //	afx_msg void OnRButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+//	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	afx_msg void OnRButtonDown(UINT nFlags, CPoint point);
 };
 
