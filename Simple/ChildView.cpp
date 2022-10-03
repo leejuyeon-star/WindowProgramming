@@ -1,4 +1,4 @@
-﻿
+
 // ChildView.cpp: CChildView 클래스의 구현
 //
 
@@ -32,6 +32,8 @@ BEGIN_MESSAGE_MAP(CChildView, CWnd)
 //ON_WM_LBUTTONDOWN()
 //ON_WM_RBUTTONDOWN()
 ON_WM_LBUTTONDOWN()
+//ON_WM_ERASEBKGND()
+ON_WM_RBUTTONDOWN()
 END_MESSAGE_MAP()
 
 
@@ -44,55 +46,60 @@ BOOL CChildView::PreCreateWindow(CREATESTRUCT& cs)
 		return FALSE;
 
 	cs.dwExStyle |= WS_EX_CLIENTEDGE;
-	cs.style |= WS_VSCROLL | WS_HSCROLL;
+	cs.style &= ~WS_BORDER;
 
 	cs.lpszClass = AfxRegisterWndClass(CS_HREDRAW|CS_VREDRAW|CS_DBLCLKS, 
-		::LoadCursor(nullptr, IDC_ARROW), (HBRUSH)GetStockObject(GRAY_BRUSH), /*reinterpret_cast<HBRUSH>(COLOR_WINDOW + 1)*/ nullptr);
+		::LoadCursor(nullptr, IDC_ARROW), /*(HBRUSH)GetStockObject(GRAY_BRUSH)*/ reinterpret_cast<HBRUSH>(COLOR_WINDOW + 1), nullptr);
+
+	CPaintDC dc(this);
+	CBitmap bitmap;
+	bitmap.LoadBitmap(IDB_BITMAP1);
+	CBrush brush3(&bitmap);
+	dc.SelectObject(&brush3);
+	brush3.CreatePatternBrush(&bitmap);
+	/*dc.RoundRect(450, 50, 6000, 2000, 50, 50);*/
+
+
 
 	return TRUE;
 }
 
 void CChildView::OnPaint() 
 {
-	CPaintDC dc(this); // 그리기를 위한 디바이스 컨텍스트입니다.
-	// TODO: 여기에 메시지 처리기 코드를 추가합니다.
-	//dc.TextOutW(50, 50, CString(_T("안녕하세요.")));
-	// 클라이언트 영역의 좌표를 얻는다
-	// 다양한 펜 종류를 연습한다
 
-	for (int x = 0; x < 256; x++)
-		for (int y = 0; y < 256; y++)
-			dc.SetPixelV(x, y, RGB(x, y, 0));
 
+
+	/*CPaintDC dc(this); // 그릴 수 있는 디바이스 컨텍스트
+	dc.TextOut(100, 50, CString(" OPAQUE 모드 [1] "));
+	dc.SetBkMode(TRANSPARENT);
+	dc.TextOut(100, 100, CString(" TRANSPARENT 모드 "));
+	dc.SetBkMode(OPAQUE);
+	dc.SetBkColor(RGB(0, 255, 0)); // 
+	dc.TextOut(100, 150, CString(" OPAQUE 모드 [2] "));*/
+	
 	
 	// 그리기 메시지에 대해서는 CWnd::OnPaint()를 호출하지 마십시오.
 }
 
-
-
-
-
-
-
-
-
 void CChildView::OnLButtonDown(UINT nFlags, CPoint point)
 {
-	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
-	CPaintDC dc(this); // 그리기를 위한 디바이스 컨텍스트입니다
-	/*COLORREF color = dc.GetPixel(point.x, point.y);*/
-	COLORREF color = dc.GetPixel(point.x, point.y);
-	int R = 0, G = 0, B = 0;
-	R = GetRValue(color);
-	G = GetGValue(color);
-	B = GetBValue(color);
-	/*TCHAR msg[50]*/
-	/*(_T("R:%d, G:%d, B:%d"), R, G, B);
-	AfxMessageBox(msg);*/
-	CString strTemp;
-	/*strTemp.Format(_T("R = %d, G = %d, B = %d"), R, G, B);*/
-	strTemp.Format(_T("%d, %d"), point.x, point.y);
-	AfxMessageBox(strTemp);
+	CPaintDC dc(this); // 그릴 수 있는 디바이스 컨텍스트
+	dc.SetBkMode(OPAQUE); // 배경모드 불투명
+	Invalidate();		//화면 갱신
+	//dc.SetBkColor(RGB(10, 250, 0)); // 배경색 설정
+	
 
 	CWnd::OnLButtonDown(nFlags, point);
+}
+
+
+
+void CChildView::OnRButtonDown(UINT nFlags, CPoint point)
+{
+	CPaintDC dc(this); // 그릴 수 있는 디바이스 컨텍스트
+	dc.SetBkMode(TRANSPARENT); // 배경모드 투명
+	Invalidate();		//화면 갱신
+	
+
+	CWnd::OnRButtonDown(nFlags, point);
 }
